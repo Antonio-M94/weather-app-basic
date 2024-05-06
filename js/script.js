@@ -115,7 +115,7 @@ const getUserCoordinates = async () => {
     });
 
     const { latitude, longitude } = position.coords;
-    const REVERSE_GEOCODING_URL = `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&units=metric&appid=${API_KEY}`;
+    const REVERSE_GEOCODING_URL = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&units=metric&appid=${API_KEY}`;
 
     const data = await fetchData(REVERSE_GEOCODING_URL);
 
