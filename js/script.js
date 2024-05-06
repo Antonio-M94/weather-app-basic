@@ -135,3 +135,7 @@ cityInput.addEventListener(
   'keyup',
   (e) => e.key === 'Enter' && getCityCoordinates()
 );
+// Llama a la función para obtener las coordenadas del usuario al cargar la página
+window.onload = () => {
+  getUserCoordinates();
+};
