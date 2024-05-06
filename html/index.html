@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App || IAMEDEV</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="shortcut icon" href="/assets/icon.png" type="png">
+</head>
+
+<body>
+    <h1>Weather App</h1>
+    <div class="container">
+        <div class="weather-input">
+            <h3>Enter a City Name</h3>
+            <input class="city-input" type="text" placeholder="E.g., New York, London, Tokyo ">
+            <button class="search-btn">Search</button>
+            <div class="separator"></div>
+            <button class="location-btn">Use Current Location</button>
+        </div>
+        <div class="weather-data">
+            <div class="current-weather">
+                <div class="details">
+                    <h2>_______ (______)</h2>
+                    <h3>( ______ )</h3>
+                    <h4>Temp:__°C</h4>
+                    <h4>Wind: __ M/S</h4>
+                    <h4>Humitity: __%</h4>
+                </div>
+
+            </div>
+            <div class="days-forecast">
+                <h2>5-Day Forecast</h2>
+                <ul class="weather-cards">
+                    <li class="card">
+                        <h3>( ______ )</h3>
+                        <h4>Temp:__°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humitity: __%</h4>
+                    </li>
+                    <li class="card">
+                        <h3>( ______ )</h3>
+                        <h4>Temp:__°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humitity: __%</h4>
+                    </li>
+                    <li class="card">
+                        <h3>( ______ )</h3>
+                        <h4>Temp:__°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humitity: __%</h4>
+                    </li>
+                    <li class="card">
+                        <h3>( ______ )</h3>
+                        <h4>Temp:__°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humitity: __%</h4>
+                    </li>
+                    <li class="card">
+                        <h3>( ______ )</h3>
+                        <h4>Temp:__°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humitity: __%</h4>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; <span id="year"></span> IAMEDEV. All rights reserved.</p>
+    </footer>
+    <script src="/js/script.js" defer></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>
