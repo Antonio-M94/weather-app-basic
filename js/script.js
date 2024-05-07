@@ -8,34 +8,103 @@ const weatherCardsDiv = document.querySelector('.weather-cards');
 // Clave de la API de OpenWeatherMap
 const API_KEY = '24a01dab159a73a155df15cb9edaddfb';
 
-// Función para crear tarjetas de clima
-const createWeatherCard = (cityName, weatherItem, index) => {
-  if (index === 0) {
-    // Tarjeta para el clima actual
-    return `
+// Función para manejar el clima actual
+const handleCurrentWeather = (cityName, data) => {
+  return `
     <div class="details">
-    <h2>${cityName} (${weatherItem.dt_txt.split(' ')[0]})</h2>
-    <h4>Temperature: ${weatherItem.main.temp.toFixed(2)}°C</h4>
-    <h4>Wind: ${weatherItem.wind.speed.toFixed(2)} M/S</h4> 
-    <h4>Humidity: ${weatherItem.main.humidity}%</h4>
+    <h2>${cityName} - current weather</h2>
+
+      <h4>Temperature: ${data.main.temp.toFixed(2)}°C</h4>
+      <h4>Wind: ${data.wind.speed.toFixed(2)} M/S</h4> 
+      <h4>Humidity: ${data.main.humidity}%</h4>
     </div>
     <div class="icon">
+      <img src="https://openweathermap.org/img/wn/${
+        data.weather[0].icon
+      }@4x.png" alt="Weather-icon">
+      <h4>${data.weather[0].description}</h4>
+    </div>`;
+};
+
+// Función para manejar el pronóstico futuro del clima
+const handleFutureWeather = (weatherItem) => {
+  return `<li class="card">
+    <h3>(${weatherItem.dt_txt.split(' ')[0]})</h3>
     <img src="https://openweathermap.org/img/wn/${
       weatherItem.weather[0].icon
-    }@4x.png" alt="Weather-icon">
-    <h4>${weatherItem.weather[0].description}</h4>
-    </div>`;
-  } else {
-    // Tarjeta para el clima futuro
-    return `<li class="card">
-  <h3>(${weatherItem.dt_txt.split(' ')[0]})</h3>
-  <img src="https://openweathermap.org/img/wn/${
-    weatherItem.weather[0].icon
-  }@2x.png" alt="Weather-icon">
-  <h4>Temp: ${weatherItem.main.temp.toFixed(2)}°C</h4>
-  <h4>Wind: ${weatherItem.wind.speed.toFixed(2)} M/S</h4>
-  <h4>Humidity: ${weatherItem.main.humidity}%</h4>
-</li>`;
+    }@2x.png" alt="Weather-icon">
+    <h4>Temp: ${weatherItem.main.temp.toFixed(2)}°C</h4>
+    <h4>Wind: ${weatherItem.wind.speed.toFixed(2)} M/S</h4>
+    <h4>Humidity: ${weatherItem.main.humidity}%</h4>
+  </li>`;
+};
+
+// Función para obtener detalles del clima actual
+const getCurrentWeatherDetails = async (cityName) => {
+  try {
+    const CURRENT_WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&appid=${API_KEY}`;
+    const data = await fetchData(CURRENT_WEATHER_API_URL);
+
+    // Limpiar contenido previo
+    currentWeatherDiv.innerHTML = '';
+
+    // Insertar detalles del clima actual
+    currentWeatherDiv.insertAdjacentHTML(
+      'beforeend',
+      handleCurrentWeather(cityName, data)
+    );
+  } catch (error) {
+    // Manejar errores
+    console.error('Error fetching current weather data:', error.message);
+    alert('An error occurred while fetching the current weather!');
+  }
+};
+
+// Función para obtener el pronóstico futuro del clima
+const getFutureWeatherDetails = async (cityName, lat, lon) => {
+  try {
+    const FUTURE_WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+    const data = await fetchData(FUTURE_WEATHER_API_URL);
+    console.log(data);
+    const uniqueForecastDays = [];
+    const fiveDaysForecast = data.list.filter((forecast) => {
+      const forecastDate = new Date(forecast.dt_txt).getDate();
+      if (
+        !uniqueForecastDays.includes(forecastDate) &&
+        uniqueForecastDays.length < 5
+      ) {
+        uniqueForecastDays.push(forecastDate);
+        return true;
+      }
+      return false;
+    });
+
+    // Limpiar contenido previo
+    weatherCardsDiv.innerHTML = '';
+
+    // Insertar pronóstico futuro del clima
+    fiveDaysForecast.forEach((weatherItem) => {
+      weatherCardsDiv.insertAdjacentHTML(
+        'beforeend',
+        handleFutureWeather(weatherItem)
+      );
+    });
+  } catch (error) {
+    // Manejar errores
+    console.error('Error fetching future weather data:', error.message);
+    alert('An error occurred while fetching the future weather forecast!');
+  }
+};
+
+// Función para obtener detalles del clima
+const getWeatherDetails = async (cityName, lat, lon) => {
+  try {
+    await getCurrentWeatherDetails(cityName);
+    await getFutureWeatherDetails(cityName, lat, lon);
+  } catch (error) {
+    // Manejar errores
+    console.error('Error fetching weather data:', error.message);
+    alert('An error occurred while fetching the weather forecast!');
   }
 };
 
@@ -48,46 +117,6 @@ const fetchData = async (url) => {
   return response.json();
 };
 
-// Función para obtener detalles del clima
-const getWeatherDetails = async (cityName, lat, lon) => {
-  try {
-    const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
-    const data = await fetchData(WEATHER_API_URL);
-
-    const uniqueForecastDays = [];
-    const fiveDaysForecast = data.list.filter((forecast) => {
-      const forecastDate = new Date(forecast.dt_txt).getDate();
-      if (!uniqueForecastDays.includes(forecastDate)) {
-        return uniqueForecastDays.push(forecastDate);
-      }
-    });
-
-    // Limpiar contenido previo
-    cityInput.value = '';
-    currentWeatherDiv.innerHTML = '';
-    weatherCardsDiv.innerHTML = '';
-
-    // Insertar tarjetas de clima
-    fiveDaysForecast.forEach((weatherItem, index) => {
-      if (index === 0) {
-        currentWeatherDiv.insertAdjacentHTML(
-          'beforeend',
-          createWeatherCard(cityName, weatherItem, index)
-        );
-      } else {
-        weatherCardsDiv.insertAdjacentHTML(
-          'beforeend',
-          createWeatherCard(cityName, weatherItem, index)
-        );
-      }
-    });
-  } catch (error) {
-    // Manejar errores
-    console.error('Error fetching weather data:', error.message);
-    alert('An error occurred while fetching the weather forecast!');
-  }
-};
-
 // Función para obtener coordenadas de la ciudad ingresada por el usuario
 const getCityCoordinates = async () => {
   try {
@@ -98,8 +127,11 @@ const getCityCoordinates = async () => {
     const data = await fetchData(GEOCODING_API_URL);
 
     if (!data.length) return;
-    const { name, lat, lon } = data[0];
-    await getWeatherDetails(name, lat, lon);
+    const { lat, lon } = data[0];
+    await getWeatherDetails(cityName, lat, lon);
+
+    // Limpiar el input después de buscar
+    cityInput.value = '';
   } catch (error) {
     // Manejar errores
     console.error('Error fetching coordinates:', error.message);
